@@ -1,0 +1,32 @@
+services:
+  minio:
+    image: quay.io/minio/minio:latest
+    container_name: annapurna_minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16
+    container_name: annapurna_postgres
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: annapurna
+      POSTGRES_PASSWORD: annapurna123
+      POSTGRES_DB: annapurna_db
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./data/masters.sql:/docker-entrypoint-initdb.d/01_masters.sql:ro
+    restart: unless-stopped
+
+volumes:
+  minio_data:
+  pg_data:

@@ -1,0 +1,36 @@
+CONTEXT
+
+annapurna stores runs 12 supermarkets every night each store billing system writes that days sales lines to a shared folder . head office has no data team; an analyst opens the files in a spreadsheetnone month at a time, and types the totals into a slide.
+last week the CFO asked for october revenue and was given three different fuigures by three different people all working from the same folder in the same meeting , the category manager asked what a particular biscuit pack sold for in march, and the spreadsheet answered with the price on the shelf today 
+the CFO instruction to you in full:
+
+"build me something where october is october . i want to slice revenue by store product category by day of the week and by month, and i want the same number everytime i ask . i also weant last march's price when i ask about last march . i do not care what software you use. i do care that the analyst can stop openig files by hand "
+
+
+
+What are you given in exam/data/
+
+->sales/- roughly six houndred daily files , one per day. Mixed csv and parquet. columns include the bill number .product code , quantity , unit price , a line type , and time stamp.
+
+-> masters.sql-- to be loaded into PostgreSQL: stores,products,product category and table of prices revision with the date each took effect.
+->finance_monthly.csv - the twelve monthly revenue figures the finance team has already closed and signed off. This is your reconciliation target for part(f)
+
+-> Billing_notes.md - whatever the billing vendor left behind. Read it . It is short and matters
+
+Tasks 
+a) Stand the platform up and land the data. Bring up an object store , a relational database and an analytical query engine. Load the daily files into the object store , organised so that a query about on estore in one month does not have to look at the other elven stores or the other eleven months. say what organisation you chose , then show it working: for one such query , how many files and how many bytes could the engine possibly have to open under your layout , compared with putting everything in one folder?
+
+b) Make it safe to run twice . some days appear in the folder more than once- the billing system re-sends when a store reports a problem. build the loading step so that running it thee times in a row gives the same results as running it once. prove it : run it three times, record the row count and a checksum after each run, and include  the output.
+
+c) Desighn the tables behind the dashboard. the dashboard must slice revenue by store , by category, by day of he week  and by month ,quickly. Design and build the tables that make that possible repeating each stores name and address on every one of the millions of sales lines. Note two things about the source data before you start: not every line is a sale , and a product code that was retired has since been reissued to a different product , so the code alone does not identify what was sold.
+
+
+d)Make march use march's prices . Prices change. using the revision table, arrange things so that a report for march 2024 uses the prices that applied in march 2024, while a report for last month uses last month's - from the same query , with no change to the code between the two. Demonstrate by running one query twice , differing only in the reporting period
+
+
+e)Query across the two systems. The sales data is in the object store; the stores, products and categories are in PostgreSQL. write one query that joins across both without first copying either side into the other. Then tell us , using evidence from the engine rather than from documentation  which parts of that query were evaluated were.
+
+f) Reconcile . Compare your monthly revenue against finance_montly.csv you will not match every month. For each month that differs,  say whether the cause is sometjing wrong with source data , a  difference in how the two of you define revenue , or a bug in your pipeline - and say which of the three you would take back to the finance team
+
+
+[ One warning . It is easy to produce an October figure that is roughly twice the correct one. If your revenuer loos surprisingly healthy , part (c) is where to look before you submit  you submit]  
